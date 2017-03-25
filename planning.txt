@@ -1,0 +1,5 @@
+1. get to the bottom of the list, keep track of the number of instructions n on the way down
+2. create a 2D square array 
+3. starting @ bottom of linked list, move upward till you hit first critical node
+	- indicate the node and any relevant offsets at corresponding array indices
+	- when you find their dependors, indicate that they are not dependent in the array
