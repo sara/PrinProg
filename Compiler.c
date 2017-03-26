@@ -1,14 +1,5 @@
-/*
- *********************************************
- *  314 Principles of Programming Languages  *
- *  Spring 2017                              *
- *  Author: Ulrich Kremer                    *
- *  Student Version                          *
- *********************************************
- */
 
 /* -------------------------------------------------
-
             CFG for tinyL LANGUAGE
 	
      PROGRAM ::= STMTLIST .
@@ -25,21 +16,15 @@
               DIGIT
      VARIABLE ::= a | b | c | d | e | f | g | h | i | j | k | l | m | n | o | p
      DIGIT ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-
      NOTE: tokens are exactly a single character long
-
      Example expressions:
-
            +12.
            +1b.
            +*34-78.
            -*+1+2a58.
-
      Example programs;
-
          a=2;b=5;c=+3*ab;d=+c1;#d.
          b=-*+1%2a58;#b.
-
  ---------------------------------------------------
  */
 
@@ -391,3 +376,4 @@ int main(int argc, char *argv[])
 	fclose(outfile);
 	return EXIT_SUCCESS;
 }
+
