@@ -91,10 +91,8 @@ Instruction* optimize(Instruction* head)
 	}
 	while(head!=NULL)
 	{
-		printf("outer\n");
 		if (head->critical!=1)
 		{
-			printf("inner\n");
 			Instruction* temp = head;	
 			if (head->prev!=NULL)
 			{
@@ -124,8 +122,6 @@ int main()
 	head = optimize(head);
 	if (head) 
 		PrintInstructionList(stdout, head);
-	else
-			printf("derp\n");
 	return EXIT_SUCCESS;
 }
 
