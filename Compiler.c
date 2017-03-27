@@ -32,7 +32,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "Instr.h"
-#include "InstrUtils.c"
 #include "InstrUtils.h"
 #include "Utils.h"
 
@@ -70,7 +69,7 @@ static int digit();
 /*************************************************************************/
 static int digit()
 {
-	printf("digit: %c\n", token);
+	//printf("digit: %c\n", token);
 	int reg;
     if (!is_digit(token)) {
 		ERROR("Expected digit\n");
@@ -84,7 +83,7 @@ static int digit()
 
 static int variable()
 {
-	printf("variable: %c\n", token);
+	//printf("variable: %c\n", token);
 	int reg;
 	if (!is_identifier(token)) {
 		ERROR("Expected identifier\n");
@@ -98,7 +97,7 @@ static int variable()
 
 static int expr()
 {
-	printf("expr token: %c\n", token);
+	//printf("expr token: %c\n", token);
 	int reg, left_reg, right_reg;
 	switch (token)
 	{
@@ -165,7 +164,7 @@ static int expr()
 }
 static void assign()
 {
-	printf("assign: %c\n", token);
+	//printf("assign: %c\n", token);
     int offset = (token-'a')*4; 
     //int a = next_register();//variable();
 	next_token();
@@ -174,7 +173,7 @@ static void assign()
 		ERROR("Program error. Current  input symbol is %c\n", token);
 		exit(EXIT_FAILURE);
 	}
-	printf("second assign: %c\n", token);
+	//printf("second assign: %c\n", token);
 	next_token();
 	char b = expr();
     //is this an empty field? how do you calculate offset?
@@ -184,7 +183,7 @@ static void assign()
 static void print()
 {
 	next_token();
-	printf("print: %c\n", token);
+	//printf("print: %c\n", token);
 	if (!is_identifier(token))
 	{	
 		ERROR("Program error. Current  input symbol is %c\n", token);
@@ -192,13 +191,13 @@ static void print()
 	}
 	int offset = (token-'a')*4; 
 	next_token();
-	printf("PRINT VAR = %i", offset);
+	//printf("PRINT VAR = %i", offset);
     CodeGen(OUTPUTAI, 0, offset, EMPTY_FIELD);
 }
 //fine
 static void stmt()
 {
-	printf("stmt: %c\n", token);
+	//printf("stmt: %c\n", token);
 	if (is_identifier(token))
 	{
 		assign();
@@ -264,7 +263,7 @@ static void CodeGen(OpCode opcode, int field1, int field2, int field3) {
 
 static inline void next_token()
 {
-	printf("START NEXT TOKEN   ");
+	//printf("START NEXT TOKEN   ");
 	if (*buffer == '\0') {
 		ERROR("End of program input\n");
 		exit(EXIT_FAILURE);
@@ -279,7 +278,7 @@ static inline void next_token()
 	}
 	if (*buffer == '.')
 		printf(".\n");
-	printf("END NEXT TOKEN\n");
+	//printf("END NEXT TOKEN\n");
 }
 
 static inline int next_register()
@@ -367,13 +366,13 @@ int main(int argc, char *argv[])
 	}
 	input = read_input(infile);
 	buffer = input;
-
 	CodeGen(LOADI, 1024, 0, EMPTY_FIELD); /* set base register to 1024 */
 	program();
 	printf("\nCode written to file \"%s\".\n\n", outfilename);
 	free(input);
 	fclose(infile);
 	fclose(outfile);
+	free(input);
 	return EXIT_SUCCESS;
 }
 

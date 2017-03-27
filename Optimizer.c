@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include "InstrUtils.h"
 #include "Utils.h"
-#include "InstrUtils.c"
 
 
 void getCritical(Instruction* head)
 {
 	int i = 0;
+	int j = 0;
 	int numInstr = 0;
 	while (head->next!=NULL)
 	{
@@ -20,7 +20,11 @@ void getCritical(Instruction* head)
 	int** critical = (int**)malloc(sizeof(int*)*numInstr);
 	for (i=0; i<numInstr; i++)
 	{
-		critical[i] = (int*)malloc(sizeof(int)*numInstr);	
+		critical[i] = (int*)malloc(sizeof(int)*numInstr);
+		for (j=0; j<numInstr; j++)
+		{
+			critical[i][j] = 0;
+		}
 	}
 
 	while (head!=NULL)
@@ -75,6 +79,11 @@ void getCritical(Instruction* head)
 		}
 		head = head->prev;
 	}
+	for (i=0; i<numInstr; i++)
+	{
+		free(critical[i]);
+	}
+	free(critical);
 	
 }
 Instruction* optimize(Instruction* head)
@@ -91,9 +100,10 @@ Instruction* optimize(Instruction* head)
 	}
 	while(head!=NULL)
 	{
+		Instruction* temp = NULL;
 		if (head->critical!=1)
 		{
-			Instruction* temp = head;	
+			temp = head;	
 			if (head->prev!=NULL)
 			{
 				head->prev->next = head->next;
@@ -102,16 +112,19 @@ Instruction* optimize(Instruction* head)
 			{
 				head->next->prev = head->prev;
 			}
-			free(temp);
 		}
 			head = head->next;
+			if (temp)
+			{
+				free(temp);
+			}
+
 	}
 	return getHead;
 }
 int main()
 {
 	Instruction *head;
-
 	head = ReadInstructionList(stdin);
 	if (!head) {
 		WARNING("No instructions\n");
@@ -122,6 +135,11 @@ int main()
 	head = optimize(head);
 	if (head) 
 		PrintInstructionList(stdout, head);
+	while (head!=NULL)
+	{Instruction* temp = head;
+	head = head->next;
+	free (temp);
+	}
 	return EXIT_SUCCESS;
 }
 
