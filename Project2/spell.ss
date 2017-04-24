@@ -25,6 +25,24 @@
 ;makes the hashed dictionary
 
 
+;see if the hashed value given for this word exists anywhere in the dictionary 
+(define hashValid(lambda (wordHash dictHash)
+  (if (null? dictHash)
+	#f
+	(if (= wordHash (car dictHash))
+	  #t
+	  (hashValid (wordHash (cdr dictHash)))))))
+
+;should be all ones if every hash value of the word is in the dict
+(define makeBitVector (lambda (wordHashList hashDict)
+	(map (lambda (wordHashList hashDict)
+		   hashValid(currWordHash))wordHashList)))
+
+;check that every value the word hashed to was present in the bit vector 
+(define wordValid (lambda (bitVector)
+	(reduce (lambda (currVal true)
+		(and currVal true) bitVector #t))))
+
 ; returns false #lifehack
 ;reduce append hash of each entry in the dict! WOOOO!
 ;(define makeVector (lambda hashfunctionlist dict)
@@ -84,7 +102,6 @@
 
 
 
-(hashdict hashfl-1 '((h e l l o) (m a y)))
 
 ;; -----------------------------------------------------
 ;; EXAMPLE HASH VALUES
@@ -111,35 +128,21 @@
 ;; SPELL CHECKER GENERATOR
 
 ;(define gen-checker
- ; (lambda (hashfunctionlist dict)
+;(lambda (hashfunctionlist dict)
 	;create the initial dictionary of hashed values ONCE, do not redefine
-;	(let ((hashDictionary hashdict(hashfunctionlist dict)))
-	;;spellchecker function itself
+;	(let ((hashDictionary (hashdict hashfunctionlist dict)))
+;	  (lambda (word)
+;		#f))))
+;		(if (null? word)
+;		  "no word entered"
+;	  (let wordHashList (map (lambda (currHashFunction)
+;			(currHashFunction word)hashfunctionlist))
+;	  (wordValid (makeBitVector (wordHashList hashdict)))))))))
+		
 	
-	
-;(define hashdict
- ;(lambda (hashfunctionlist dict)
-;	 (map (lambda (hashfunction)
-;		(map hashfunction
-;			   dict))
-;		hashfunctionlist)))
 	 
 
-;(define makeBitVector (lambda (wordHashList)
-;	(map (lambda (wordHashList dictHash)
-;		(map (lambda (currDictHash)
-;		(if (null? dictHash)
-;		  #f
-;		  (if (= wordHash (car dictHash))
-;			#t
-;			(else makeBitVector(cdr dictHash))))dictHash)wordHashList)))))
 
-
-;	(define spellchecker(word)
-;	  (if (null? word)
-;		("no word entered")
-;		(let (wordHash hashdict (hashfunctionlist word))
-		  	
 			
 
 
@@ -150,12 +153,12 @@
 ;; -----------------------------------------------------
 ;; EXAMPLE SPELL CHECKERS
 
-;;(define checker-1 (gen-checker hashfl-1 dictionary))
+;(define checker-1 (gen-checker hashfl-1 dictionary))
 ;;(define checker-2 (gen-checker hashfl-2 dictionary))
 ;;(define checker-3 (gen-checker hashfl-3 dictionary))
 
 ;; EXAMPLE APPLICATIONS OF A SPELL CHECKER
 ;;
-;;  (checker-1 '(a r g g g g)) ==> #f
+;  (checker-1 '(a r g g g g)) ;==> #f
 ;;  (checker-2 '(h e l l o)) ==> #t
 ;;  (check   er-2 '(a r g g g g)) ==> #t  // false positive
