@@ -9,7 +9,8 @@
 (load "include.ss")
 
 ;; contains simple dictionary definition
-(load "test-dictionary.ss")
+;(load "test-dictionary.ss")
+(load "dictionary.ss")
 
 ;; -----------------------------------------------------
 ;; HELPER FUNCTIONS
@@ -17,26 +18,57 @@
 
 
 (define hashdict
- (lambda (hashfunctionlist dict)
-	 (map (lambda (hashfunction)
-		(map hashfunction
-			   dict))
-		hashfunctionlist)))
+	(lambda (hashfunctionlist dict)
+		(map 
+		  	(lambda (hashfunction)
+				(map 
+				 	hashfunction
+			   		dict
+				)
+			)
+			hashfunctionlist
+		)
+	)
+)
 ;makes the hashed dictionary
+;
+(define flatten
+  	(lambda (l)
+		(cond ((null? l) '())
+			  ((pair? l) (append (flatten (car l)) (flatten (cdr l))))
+			  (else (list l))
+		)
+	)
+)
 
 
 ;see if the hashed value given for this word exists anywhere in the dictionary 
-(define hashValid(lambda (wordHash dictHash)
-  (if (null? dictHash)
-	#f
-	(if (= wordHash (car dictHash))
-	  #t
-	  (hashValid (wordHash (cdr dictHash)))))))
+(define hashValid
+  	(lambda (wordHash dictHash)
+		(reduce 
+		  	(lambda (x y) (or x y)) 
+			(map
+			  	(lambda (dictHashEntry)
+					(= wordHash dictHashEntry)
+				)
+			  	dictHash
+			)
+			#f
+		)
+	)
+)
 
 ;should be all ones if every hash value of the word is in the dict
-(define makeBitVector (lambda (wordHashList hashDict)
-	(map (lambda (wordHashList hashDict)
-		   hashValid(currWordHash))wordHashList)))
+(define makeBitVector 
+  	(lambda (wordHashList hashDict)
+		(map 
+		  	(lambda (currWordHash)
+		   		(hashValid currWordHash hashDict)
+			)
+	 		wordHashList
+		)
+	)
+)
 
 ;check that every value the word hashed to was present in the bit vector 
 (define wordValid (lambda (bitVector)
@@ -127,38 +159,43 @@
 ;; -----------------------------------------------------
 ;; SPELL CHECKER GENERATOR
 
-;(define gen-checker
-;(lambda (hashfunctionlist dict)
+(define gen-checker
+	(lambda (hashfunctionlist dict)
 	;create the initial dictionary of hashed values ONCE, do not redefine
-;	(let ((hashDictionary (hashdict hashfunctionlist dict)))
-;	  (lambda (word)
-;		#f))))
-;		(if (null? word)
-;		  "no word entered"
-;	  (let wordHashList (map (lambda (currHashFunction)
-;			(currHashFunction word)hashfunctionlist))
-;	  (wordValid (makeBitVector (wordHashList hashdict)))))))))
-		
-	
-	 
-
-
-			
-
-
-;;))
+		(let ((hashDictionary (hashdict hashfunctionlist dict)))
+			(lambda (word)
+				(let ((wordHashList 
+						(map 
+			   			  (lambda (hashfunction)
+							(hashfunction word)
+						  )
+						  hashfunctionlist
+						) 
+					 ))
+					;(wordValid (makeBitVector(wordHashList)))
+					(reduce
+					  	(lambda (x y) (and x y))
+						(makeBitVector wordHashList (flatten hashDictionary))
+						#t
+					)
+				)
+			)
+		)
+	)
+)
 
 
 
 ;; -----------------------------------------------------
 ;; EXAMPLE SPELL CHECKERS
 
-;(define checker-1 (gen-checker hashfl-1 dictionary))
-;;(define checker-2 (gen-checker hashfl-2 dictionary))
-;;(define checker-3 (gen-checker hashfl-3 dictionary))
+(define checker-1 (gen-checker hashfl-1 dictionary))
+(define checker-2 (gen-checker hashfl-2 dictionary))
+(define checker-3 (gen-checker hashfl-3 dictionary))
 
 ;; EXAMPLE APPLICATIONS OF A SPELL CHECKER
 ;;
-;  (checker-1 '(a r g g g g)) ;==> #f
-;;  (checker-2 '(h e l l o)) ==> #t
-;;  (check   er-2 '(a r g g g g)) ==> #t  // false positive
+  ;(checker-1 '(a r g g g g)) ;==> #f
+  ;(checker-2 '(h e l l o)) ;==> #t
+  ;(checker-2 '(a r g g g g)) ;==> #t  // false positive
+
